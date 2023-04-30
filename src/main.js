@@ -4,6 +4,7 @@ import { message } from 'telegraf/filters';
 
 import { ALLOWED_USER_IDS, ERROR_MESSAGE, GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
 import { auth } from './auth.js';
+import { greeting } from './greeting.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
 
@@ -16,9 +17,7 @@ bot.command('start', auth(ALLOWED_USER_IDS), async (ctx) => {
     messages: [],
   };
 
-  await ctx.reply(
-    'Привет! Я – искусственный интеллект. Меня зовут OpenAI. Я создан для того, чтобы помогать людям в решении различных задач. Задай мне любой вопрос и я постараюсь помочь тебе!'
-  );
+  await greeting()(ctx);
 });
 
 bot.command('new', auth(ALLOWED_USER_IDS), async (ctx) => {
