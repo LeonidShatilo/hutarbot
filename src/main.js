@@ -10,6 +10,7 @@ import { auth } from './auth.js';
 import { greeting } from './greeting.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
+import { removeFile } from './utils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -82,6 +83,7 @@ bot.on(message('voice'), auth(ALLOWED_USER_IDS), async (ctx) => {
     });
 
     await ctx.reply(response.content);
+    await removeFile(mp3Path);
   } catch (e) {
     await ctx.reply(ERROR_MESSAGE);
     console.error('Error while processing a voice message: ', e.message);
