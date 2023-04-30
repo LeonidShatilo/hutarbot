@@ -1,0 +1,6 @@
+.env
+.vscode
+assets/*
+!assets/.gitkeep
+config
+node_modules
