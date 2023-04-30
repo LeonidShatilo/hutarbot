@@ -2,7 +2,8 @@ import { Telegraf, session } from 'telegraf';
 import { italic } from 'telegraf/format';
 import { message } from 'telegraf/filters';
 
-import { ERROR_MESSAGE, GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
+import { ALLOWED_USER_IDS, ERROR_MESSAGE, GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
+import { auth } from './auth.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
 
@@ -10,7 +11,7 @@ const bot = new Telegraf(TELEGRAM_TOKEN);
 
 bot.use(session());
 
-bot.command('start', async (ctx) => {
+bot.command('start', auth(ALLOWED_USER_IDS), async (ctx) => {
   ctx.session = {
     messages: [],
   };
@@ -20,7 +21,7 @@ bot.command('start', async (ctx) => {
   );
 });
 
-bot.command('new', async (ctx) => {
+bot.command('new', auth(ALLOWED_USER_IDS), async (ctx) => {
   ctx.session = {
     messages: [],
   };
@@ -28,7 +29,7 @@ bot.command('new', async (ctx) => {
   await ctx.reply('Конечно, давайте начнём всё с чистого листа. Чем я могу вам помочь?');
 });
 
-bot.on(message('text'), async (ctx) => {
+bot.on(message('text'), auth(ALLOWED_USER_IDS), async (ctx) => {
   ctx.session ??= {
     messages: [],
   };
@@ -47,7 +48,7 @@ bot.on(message('text'), async (ctx) => {
   }
 });
 
-bot.on(message('voice'), async (ctx) => {
+bot.on(message('voice'), auth(ALLOWED_USER_IDS), async (ctx) => {
   ctx.session ??= {
     messages: [],
   };
