@@ -92,6 +92,7 @@ bot.on(message('text'), auth(ALLOWED_USER_IDS), async (ctx) => {
       content: ctx.message.text,
     });
 
+    await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
     const response = await openAI.chat(ctx.session.messages);
 
     ctx.session.messages.push({
@@ -111,6 +112,8 @@ bot.on(message('voice'), auth(ALLOWED_USER_IDS), async (ctx) => {
   ctx.session.messages = ctx.session.messages || [];
 
   try {
+    await ctx.telegram.sendChatAction(ctx.chat.id, 'upload_voice');
+
     const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id);
     const userId = String(ctx.message.from.id);
     const oggPath = await ogg.create(link.href, userId);
@@ -124,6 +127,7 @@ bot.on(message('voice'), auth(ALLOWED_USER_IDS), async (ctx) => {
       content: text,
     });
 
+    await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
     const response = await openAI.chat(ctx.session.messages);
 
     ctx.session.messages.push({
