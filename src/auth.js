@@ -1,7 +1,9 @@
-export const auth = (allowedUserIds) => async (ctx, next) => {
+import { ALLOWED_USER_IDS } from './constants.js';
+
+export const auth = () => async (ctx, next) => {
   const userId = ctx.from?.id;
 
-  if (allowedUserIds?.includes(userId)) {
+  if (userId && ALLOWED_USER_IDS.includes(userId)) {
     return next();
   }
 

@@ -5,11 +5,13 @@ import { italic } from 'telegraf/format';
 import { message } from 'telegraf/filters';
 import LocalSession from 'telegraf-session-local';
 
-import { ALLOWED_USER_IDS, ERROR_MESSAGE, GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
 import { auth } from './auth.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
+
 import { removeFile } from './utils.js';
+
+import { ERROR_MESSAGE, GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -20,9 +22,11 @@ const localSession = new LocalSession({ database: databasePath });
 
 bot.use(localSession.middleware());
 
+bot.use(auth());
+
 bot.telegram.setMyCommands([{ command: 'new', description: 'Новая тема' }]);
 
-bot.command('start', auth(ALLOWED_USER_IDS), async (ctx) => {
+bot.command('start', async (ctx) => {
   ctx.session.messages = [];
 
   await ctx.reply(
@@ -30,13 +34,13 @@ bot.command('start', auth(ALLOWED_USER_IDS), async (ctx) => {
   );
 });
 
-bot.command('new', auth(ALLOWED_USER_IDS), async (ctx) => {
+bot.command('new', async (ctx) => {
   ctx.session.messages = [];
 
   await ctx.reply('Конечно, давайте начнём новую тему. Чем я могу вам помочь?');
 });
 
-bot.on(message('text'), auth(ALLOWED_USER_IDS), async (ctx) => {
+bot.on(message('text'), async (ctx) => {
   ctx.session = ctx.session || {};
   ctx.session.messages = ctx.session.messages || [];
 
@@ -61,7 +65,7 @@ bot.on(message('text'), auth(ALLOWED_USER_IDS), async (ctx) => {
   }
 });
 
-bot.on(message('voice'), auth(ALLOWED_USER_IDS), async (ctx) => {
+bot.on(message('voice'), async (ctx) => {
   ctx.session = ctx.session || {};
   ctx.session.messages = ctx.session.messages || [];
 

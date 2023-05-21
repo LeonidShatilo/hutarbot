@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN;
-export const OPEN_AI_KEY = process.env.OPEN_AI_KEY;
-export const ALLOWED_USER_IDS = process.env.ALLOWED_USER_IDS?.split(',').map((id) => Number(id));
+export const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN ?? '';
+export const OPEN_AI_KEY = process.env.OPEN_AI_KEY ?? '';
+export const ALLOWED_USER_IDS = process.env.ALLOWED_USER_IDS?.split(',').map((id) => Number(id)) ?? [];
 
 export const GPT_ROLES = {
   ASSISTANT: 'assistant',
