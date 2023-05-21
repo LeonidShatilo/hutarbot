@@ -5,6 +5,8 @@ dotenv.config();
 export const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN ?? '';
 export const OPEN_AI_KEY = process.env.OPEN_AI_KEY ?? '';
 export const ALLOWED_USER_IDS = process.env.ALLOWED_USER_IDS?.split(',').map((id) => Number(id)) ?? [];
+export const ERROR_LOG_VIEWERS_USER_IDS =
+  process.env.ERROR_LOG_VIEWERS_USER_IDS?.split(',').map((id) => Number(id)) ?? [];
 
 export const GPT_ROLES = {
   ASSISTANT: 'assistant',
@@ -12,4 +14,5 @@ export const GPT_ROLES = {
   SYSTEM: 'system',
 };
 
-export const ERROR_MESSAGE = 'Ой, что-то пошло не так! Извините, я не могу сейчас помочь вам. Попробуйте позже.';
+export const DEFAULT_ERROR_MESSAGE =
+  'Ой, что-то пошло не так! Извините, я не могу сейчас помочь вам. Попробуйте позже.';

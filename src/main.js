@@ -6,12 +6,13 @@ import { message } from 'telegraf/filters';
 import LocalSession from 'telegraf-session-local';
 
 import { auth } from './auth.js';
+import { errorLogger } from './errorLogger.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
 
 import { removeFile } from './utils.js';
 
-import { ERROR_MESSAGE, GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
+import { GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -51,17 +52,16 @@ bot.on(message('text'), async (ctx) => {
     });
 
     await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
-    const response = await openAI.chat(ctx.session.messages);
+    const response = await openAI.chat(ctx.session.messages, ctx);
 
     ctx.session.messages.push({
       role: GPT_ROLES.ASSISTANT,
-      content: response.content,
+      content: response?.content,
     });
 
-    await ctx.reply(response.content);
-  } catch (e) {
-    await ctx.reply(ERROR_MESSAGE);
-    console.error('Error while processing a text message: ', e.message);
+    await ctx.reply(response?.content);
+  } catch (error) {
+    await errorLogger('main.message.text', error, ctx);
   }
 });
 
@@ -74,30 +74,31 @@ bot.on(message('voice'), async (ctx) => {
 
     const link = await ctx.telegram.getFileLink(ctx.message.voice.file_id);
     const userId = String(ctx.message.from.id);
-    const oggPath = await ogg.create(link.href, userId);
-    const mp3Path = await ogg.convert(oggPath, userId);
-    const text = await openAI.transcription(mp3Path);
+    const oggPath = await ogg.create(link.href, userId, ctx);
+    const mp3Path = await ogg.convert(oggPath, userId, ctx);
+    const text = await openAI.transcription(mp3Path, ctx);
 
-    await ctx.reply(italic(`«${text}»`));
+    if (text) {
+      await ctx.reply(italic(`«${text}»`));
 
-    ctx.session.messages.push({
-      role: GPT_ROLES.USER,
-      content: text,
-    });
+      ctx.session.messages.push({
+        role: GPT_ROLES.USER,
+        content: text,
+      });
+    }
 
     await ctx.telegram.sendChatAction(ctx.chat.id, 'typing');
-    const response = await openAI.chat(ctx.session.messages);
+    const response = await openAI.chat(ctx.session.messages, ctx);
 
     ctx.session.messages.push({
       role: GPT_ROLES.ASSISTANT,
-      content: response.content,
+      content: response?.content,
     });
 
-    await ctx.reply(response.content);
-    await removeFile(mp3Path);
-  } catch (e) {
-    await ctx.reply(ERROR_MESSAGE);
-    console.error('Error while processing a voice message: ', e.message);
+    await ctx.reply(response?.content);
+    await removeFile(mp3Path, ctx);
+  } catch (error) {
+    await errorLogger('main.message.voice', error, ctx);
   }
 });
 

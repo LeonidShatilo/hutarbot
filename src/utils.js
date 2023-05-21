@@ -1,9 +1,11 @@
 import { unlink } from 'fs/promises';
 
-export async function removeFile(path) {
+import { errorLogger } from './errorLogger.js';
+
+export async function removeFile(path, ctx) {
   try {
     await unlink(path);
-  } catch (e) {
-    console.error('Error while removing file: ', e.message);
+  } catch (error) {
+    await errorLogger('utils.removeFile', error, ctx);
   }
 }
