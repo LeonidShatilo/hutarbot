@@ -5,8 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node src/bot.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon --ignore database.json src/bot.js"
+    "start": "node src/bot.js",
+    "start:dev": "nodemon --ignore database.json src/bot.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
@@ -14,7 +14,6 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "axios": "^1.4.0",
-    "cross-env": "^7.0.3",
     "dotenv": "^16.0.3",
     "fluent-ffmpeg": "^2.1.2",
     "openai": "^3.2.1",
