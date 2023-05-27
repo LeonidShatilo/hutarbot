@@ -5,8 +5,8 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "cross-env NODE_ENV=production node ./src/main.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon --ignore database.json ./src/main.js"
+    "start": "cross-env NODE_ENV=production node src/bot.js",
+    "start:dev": "cross-env NODE_ENV=development nodemon --ignore database.json src/bot.js"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
