@@ -1,7 +1,6 @@
 {
   "name": "hutarbot",
   "version": "1.0.0",
-  "main": "index.js",
   "author": "Leonid Shatilo <shatiloleonid@gmail.com>",
   "license": "MIT",
   "type": "module",
