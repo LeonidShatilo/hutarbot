@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import { italic } from 'telegraf/format';
 import { message } from 'telegraf/filters';
 import LocalSession from 'telegraf-session-local';
+import express from 'express';
 
 import { auth } from './auth.js';
 import { errorLogger } from './errorLogger.js';
@@ -12,7 +13,7 @@ import { openAI } from './openai.js';
 
 import { removeFile } from './utils.js';
 
-import { GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
+import { GPT_ROLES, TELEGRAM_TOKEN, PORT, WEBHOOK_URL } from './constants.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -102,7 +103,15 @@ bot.on(message('voice'), async (ctx) => {
   }
 });
 
-bot.launch();
+const app = express();
+
+app.use(bot.webhookCallback());
+
+bot.telegram.setWebhook(WEBHOOK_URL);
+
+app.listen(PORT, () => {
+  console.log(`Webhook server has been started on ${PORT} port...`);
+});
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
