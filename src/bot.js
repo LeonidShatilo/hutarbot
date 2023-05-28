@@ -5,23 +5,29 @@ import { italic } from 'telegraf/format';
 import { message } from 'telegraf/filters';
 import LocalSession from 'telegraf-session-local';
 import express from 'express';
+import fs from 'fs';
 
 import { auth } from './auth.js';
 import { errorLogger } from './errorLogger.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
-import { setWebhook } from './webhook.js';
 
 import { removeFile } from './utils.js';
 
-import { GPT_ROLES, TELEGRAM_TOKEN, PORT, WEBHOOK_URL } from './constants.js';
+import { DATABASE_NAME, GPT_ROLES, PORT, TELEGRAM_TOKEN, WEBHOOK_URL } from './constants.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const app = express();
 
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
-const databasePath = resolve(__dirname, '../assets', 'database.json');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const databasePath = resolve(__dirname, '../assets', DATABASE_NAME);
 const localSession = new LocalSession({ database: databasePath });
+
+app.use(bot.webhookCallback());
+
+bot.telegram.setWebhook(WEBHOOK_URL).then(console.log('Webhook has been set successfully.'));
 
 bot.use(localSession.middleware());
 
@@ -104,20 +110,27 @@ bot.on(message('voice'), async (ctx) => {
   }
 });
 
-const app = express();
-
-app.use(bot.webhookCallback());
-
-setWebhook(bot, WEBHOOK_URL);
-
 app.listen(PORT, () => {
-  console.log(`Webhook server has been started on ${PORT} port...`);
+  console.log(`Server has been started on ${PORT} port.`);
 });
 
 app.get('/', (req, res) => {
   res.json({
     message: 'Telegram bot is working.',
     success: true,
+  });
+});
+
+app.get(`/${DATABASE_NAME}`, (req, res) => {
+  fs.readFile(databasePath, 'utf8', (err, data) => {
+    try {
+      res.json(JSON.parse(data));
+    } catch (error) {
+      res.json({
+        message: `${error.name}: ${error.message}`,
+        success: false,
+      });
+    }
   });
 });
 
