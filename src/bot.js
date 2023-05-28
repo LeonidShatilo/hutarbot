@@ -10,6 +10,7 @@ import { auth } from './auth.js';
 import { errorLogger } from './errorLogger.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
+import { setWebhook } from './webhook.js';
 
 import { removeFile } from './utils.js';
 
@@ -107,10 +108,17 @@ const app = express();
 
 app.use(bot.webhookCallback());
 
-bot.telegram.setWebhook(WEBHOOK_URL);
+setWebhook(bot, WEBHOOK_URL);
 
 app.listen(PORT, () => {
   console.log(`Webhook server has been started on ${PORT} port...`);
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Telegram bot is working.',
+    success: true,
+  });
 });
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
