@@ -134,7 +134,7 @@ app.get(`/${DATABASE_NAME}`, (req, res) => {
   });
 });
 
-setInterval(console.log(`>>> I'm alive!`, 60_000));
+setInterval(console.log(`>>> I'm alive!`), 60_000);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
