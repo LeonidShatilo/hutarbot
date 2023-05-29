@@ -10,7 +10,7 @@ export const ERROR_LOG_VIEWERS_USER_IDS =
 export const WEBHOOK_URL = process.env.WEBHOOK_URL ?? '';
 export const PORT = process.env.PORT ?? 3000;
 export const DATABASE_NAME = process.env.DATABASE_NAME ?? '';
-export const PING_INTERVAL_MS = Number(process.env.PING_INTERVAL_MS) ?? 900_000; // 15 min by default
+export const PING_INTERVAL_MS = Number(process.env.PING_INTERVAL_MS) || 900_000; // 15 min by default
 
 export const GPT_ROLES = {
   ASSISTANT: 'assistant',
