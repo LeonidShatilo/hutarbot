@@ -134,7 +134,7 @@ app.get(`/${DATABASE_NAME}`, (req, res) => {
   });
 });
 
-setInterval(pingWebhook, PING_INTERVAL_MS);
+setInterval(() => pingWebhook(), PING_INTERVAL_MS);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
