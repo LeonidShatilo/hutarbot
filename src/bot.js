@@ -12,9 +12,9 @@ import { errorLogger } from './errorLogger.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
 
-import { removeFile } from './utils.js';
+import { pingWebhook, removeFile } from './utils.js';
 
-import { DATABASE_NAME, GPT_ROLES, PORT, TELEGRAM_TOKEN, WEBHOOK_URL } from './constants.js';
+import { DATABASE_NAME, GPT_ROLES, PING_INTERVAL_MS, PORT, TELEGRAM_TOKEN, WEBHOOK_URL } from './constants.js';
 
 const app = express();
 
@@ -134,7 +134,7 @@ app.get(`/${DATABASE_NAME}`, (req, res) => {
   });
 });
 
-setInterval(() => console.log(`>>> I'm alive!`), 60_000);
+setInterval(pingWebhook, PING_INTERVAL_MS);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
