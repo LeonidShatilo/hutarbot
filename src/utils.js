@@ -14,5 +14,5 @@ export const removeFile = async (path, ctx) => {
 };
 
 export const pingWebhook = () => {
-  axios.get(WEBHOOK_URL).then(console.log('Ping...'));
+  axios.get(WEBHOOK_URL).then(() => console.log('Ping...'));
 };

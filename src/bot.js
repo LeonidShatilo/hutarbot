@@ -27,7 +27,7 @@ const localSession = new LocalSession({ database: databasePath });
 
 app.use(bot.webhookCallback());
 
-bot.telegram.setWebhook(WEBHOOK_URL).then(console.log('Webhook has been set successfully.'));
+bot.telegram.setWebhook(WEBHOOK_URL).then(() => console.log('Webhook has been set successfully.'));
 
 bot.use(localSession.middleware());
 
@@ -134,7 +134,7 @@ app.get(`/${DATABASE_NAME}`, (req, res) => {
   });
 });
 
-setInterval(() => pingWebhook(), PING_INTERVAL_MS);
+setInterval(() => pingWebhook(), 900000);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
