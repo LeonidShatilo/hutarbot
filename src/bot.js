@@ -4,6 +4,8 @@ import { fileURLToPath } from 'url';
 import { italic } from 'telegraf/format';
 import { message } from 'telegraf/filters';
 import LocalSession from 'telegraf-session-local';
+import express from 'express';
+import fs from 'fs';
 
 import { auth } from './auth.js';
 import { errorLogger } from './errorLogger.js';
@@ -12,33 +14,40 @@ import { openAI } from './openai.js';
 
 import { removeFile } from './utils.js';
 
-import { GPT_ROLES, TELEGRAM_TOKEN } from './constants.js';
+import { DATABASE_NAME, GPT_ROLES, PORT, TELEGRAM_TOKEN, WEBHOOK_URL } from './constants.js';
 
-const __dirname = dirname(fileURLToPath(import.meta.url));
+const app = express();
 
 const bot = new Telegraf(TELEGRAM_TOKEN);
 
-const databasePath = resolve(__dirname, '../assets', 'database.json');
+const __dirname = dirname(fileURLToPath(import.meta.url));
+
+const databasePath = resolve(__dirname, '../assets', DATABASE_NAME);
 const localSession = new LocalSession({ database: databasePath });
+
+app.use(bot.webhookCallback());
+
+bot.telegram.setWebhook(WEBHOOK_URL).then(() => console.log('Webhook has been set successfully.'));
 
 bot.use(localSession.middleware());
 
 bot.use(auth());
 
-bot.telegram.setMyCommands([{ command: 'new', description: 'Новая тема' }]);
+bot.telegram.setMyCommands([
+  { command: 'start', description: 'Запустить бота' },
+  { command: 'new', description: 'Новая тема' },
+]);
 
 bot.command('start', async (ctx) => {
   ctx.session.messages = [];
 
-  await ctx.reply(
-    'Привет! Я – искусственный интеллект. Меня зовут OpenAI. Я создан для того, чтобы помогать людям в решении различных задач. Задайте мне любой вопрос и я постараюсь помочь вам!'
-  );
+  await ctx.reply('Привет! Чем я могу вам помочь?');
 });
 
 bot.command('new', async (ctx) => {
   ctx.session.messages = [];
 
-  await ctx.reply('Конечно, давайте начнём новую тему. Чем я могу вам помочь?');
+  await ctx.reply('Конечно, давайте начнём новую тему.');
 });
 
 bot.on(message('text'), async (ctx) => {
@@ -102,7 +111,29 @@ bot.on(message('voice'), async (ctx) => {
   }
 });
 
-bot.launch();
+app.listen(PORT, () => {
+  console.log(`Server has been started on ${PORT} port.`);
+});
+
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Telegram bot is working.',
+    success: true,
+  });
+});
+
+app.get(`/${DATABASE_NAME}`, (req, res) => {
+  fs.readFile(databasePath, 'utf8', (err, data) => {
+    try {
+      res.json(JSON.parse(data));
+    } catch (error) {
+      res.json({
+        message: `${error.name}: ${error.message}`,
+        success: false,
+      });
+    }
+  });
+});
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));

@@ -7,7 +7,7 @@ export const auth = () => async (ctx, next) => {
     return next();
   }
 
-  await ctx.reply('Извините, это приватный бот — вы не можете им пользоваться.');
+  await ctx.reply('Это приватный бот — вы не можете им пользоваться.');
 
   return;
 };

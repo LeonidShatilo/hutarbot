@@ -1,12 +1,12 @@
 {
   "name": "hutarbot",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Leonid Shatilo <shatiloleonid@gmail.com>",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "start": "cross-env NODE_ENV=production node src/bot.js",
-    "start:dev": "cross-env NODE_ENV=development nodemon --ignore database.json src/bot.js"
+    "start:dev": "cross-env NODE_ENV=development nodemon --ignore 'assets/*' src/bot.js"
   },
   "devDependencies": {
     "nodemon": "^2.0.22"
@@ -17,6 +17,7 @@
     "cross-env": "^7.0.3",
     "debug": "^4.3.4",
     "dotenv": "^16.0.3",
+    "express": "^4.18.2",
     "fluent-ffmpeg": "^2.1.2",
     "openai": "^3.2.1",
     "telegraf": "^4.12.2",
