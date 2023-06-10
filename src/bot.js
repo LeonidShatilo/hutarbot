@@ -12,9 +12,9 @@ import { errorLogger } from './errorLogger.js';
 import { ogg } from './oggConverter.js';
 import { openAI } from './openai.js';
 
-import { pingWebhook, removeFile } from './utils.js';
+import { removeFile } from './utils.js';
 
-import { DATABASE_NAME, GPT_ROLES, PING_INTERVAL_MS, PORT, TELEGRAM_TOKEN, WEBHOOK_URL } from './constants.js';
+import { DATABASE_NAME, GPT_ROLES, PORT, TELEGRAM_TOKEN, WEBHOOK_URL } from './constants.js';
 
 const app = express();
 
@@ -33,20 +33,21 @@ bot.use(localSession.middleware());
 
 bot.use(auth());
 
-bot.telegram.setMyCommands([{ command: 'new', description: 'Новая тема' }]);
+bot.telegram.setMyCommands([
+  { command: 'start', description: 'Запустить бота' },
+  { command: 'new', description: 'Новая тема' },
+]);
 
 bot.command('start', async (ctx) => {
   ctx.session.messages = [];
 
-  await ctx.reply(
-    'Привет! Я – искусственный интеллект. Меня зовут OpenAI. Я создан для того, чтобы помогать людям в решении различных задач. Задайте мне любой вопрос и я постараюсь помочь вам!'
-  );
+  await ctx.reply('Привет! Чем я могу вам помочь?');
 });
 
 bot.command('new', async (ctx) => {
   ctx.session.messages = [];
 
-  await ctx.reply('Конечно, давайте начнём новую тему. Чем я могу вам помочь?');
+  await ctx.reply('Конечно, давайте начнём новую тему.');
 });
 
 bot.on(message('text'), async (ctx) => {
@@ -133,8 +134,6 @@ app.get(`/${DATABASE_NAME}`, (req, res) => {
     }
   });
 });
-
-// setInterval(pingWebhook, PING_INTERVAL_MS);
 
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
