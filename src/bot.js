@@ -88,7 +88,11 @@ bot.on(message('voice'), async (ctx) => {
     const text = await openAI.transcription(mp3Path, ctx);
 
     if (text) {
-      await ctx.reply(italic(`«${text}»`));
+      const replyOptions = {
+        reply_to_message_id: ctx.message.message_id,
+      };
+
+      await ctx.reply(italic(`«${text}»`), replyOptions);
 
       ctx.session.messages.push({
         role: GPT_ROLES.USER,
